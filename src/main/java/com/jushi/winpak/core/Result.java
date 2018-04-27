@@ -1,4 +1,4 @@
-package com.company.project.core;
+package com.jushi.winpak.core;
 
 import com.alibaba.fastjson.JSON;
 
