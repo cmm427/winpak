@@ -37,7 +37,7 @@ public class ${modelNameUpperCamel}Controller {
     }
 
     @PutMapping
-    public Result update(@RequestBody ${modelNameUpperCamel} ${modelNameLowerCamel， @RequestParam(name = "appid") String appid, @RequestParam(name = "timestamp") String timestamp, @RequestParam(name = "sign") String sign}) {
+    public Result update(@RequestBody ${modelNameUpperCamel} ${modelNameLowerCamel}， @RequestParam(name = "appid") String appid, @RequestParam(name = "timestamp") String timestamp, @RequestParam(name = "sign") String sign) {
         ${modelNameLowerCamel}Service.update(${modelNameLowerCamel});
         return ResultGenerator.genSuccessResult();
     }
