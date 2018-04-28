@@ -31,25 +31,25 @@ public class ${modelNameUpperCamel}Controller {
     }
 
     @DeleteMapping("/{id}")
-    public Result delete(@PathVariable Integer id， @RequestParam(name = "appid") String appid, @RequestParam(name = "timestamp") String timestamp, @RequestParam(name = "sign") String sign) {
+    public Result delete(@PathVariable Integer id, @RequestParam(name = "appid") String appid, @RequestParam(name = "timestamp") String timestamp, @RequestParam(name = "sign") String sign) {
         ${modelNameLowerCamel}Service.deleteById(id);
         return ResultGenerator.genSuccessResult();
     }
 
     @PutMapping
-    public Result update(@RequestBody ${modelNameUpperCamel} ${modelNameLowerCamel}， @RequestParam(name = "appid") String appid, @RequestParam(name = "timestamp") String timestamp, @RequestParam(name = "sign") String sign) {
+    public Result update(@RequestBody ${modelNameUpperCamel} ${modelNameLowerCamel}, @RequestParam(name = "appid") String appid, @RequestParam(name = "timestamp") String timestamp, @RequestParam(name = "sign") String sign) {
         ${modelNameLowerCamel}Service.update(${modelNameLowerCamel});
         return ResultGenerator.genSuccessResult();
     }
 
     @GetMapping("/{id}")
-    public Result detail(@PathVariable Integer id， @RequestParam(name = "appid") String appid, @RequestParam(name = "timestamp") String timestamp, @RequestParam(name = "sign") String sign) {
+    public Result detail(@PathVariable Integer id, @RequestParam(name = "appid") String appid, @RequestParam(name = "timestamp") String timestamp, @RequestParam(name = "sign") String sign) {
         ${modelNameUpperCamel} ${modelNameLowerCamel} = ${modelNameLowerCamel}Service.findById(id);
         return ResultGenerator.genSuccessResult(${modelNameLowerCamel});
     }
 
     @GetMapping
-    public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size， @RequestParam(name = "appid") String appid, @RequestParam(name = "timestamp") String timestamp, @RequestParam(name = "sign") String sign) {
+    public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size, @RequestParam(name = "appid") String appid, @RequestParam(name = "timestamp") String timestamp, @RequestParam(name = "sign") String sign) {
         PageHelper.startPage(page, size);
         List<${modelNameUpperCamel}> list = ${modelNameLowerCamel}Service.findAll();
         PageInfo pageInfo = new PageInfo(list);
