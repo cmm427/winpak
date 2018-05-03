@@ -13,4 +13,7 @@ public final class ProjectConstant {
     public static final String CONTROLLER_PACKAGE = BASE_PACKAGE + ".controller";//Controller所在包
 
     public static final String MAPPER_INTERFACE_REFERENCE = BASE_PACKAGE + ".core.Mapper";//Mapper插件基础接口的完全限定名
+
+    public static final String DUOMI_APPID = "456";//appid
+    public static final String DUOMI_APP_SECRET = "carl";//app secret
 }

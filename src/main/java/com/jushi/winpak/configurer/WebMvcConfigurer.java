@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +19,7 @@ import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.jushi.winpak.core.Result;
 import com.jushi.winpak.core.ResultCode;
 import com.jushi.winpak.core.ServiceException;
+import com.jushi.winpak.util.AESDecode;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -33,6 +35,9 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import static com.jushi.winpak.core.ProjectConstant.DUOMI_APPID;
+import static com.jushi.winpak.core.ProjectConstant.DUOMI_APP_SECRET;
 
 /**
  * Spring MVC 配置
@@ -103,12 +108,12 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         //接口签名认证拦截器，该签名认证比较简单，实际项目中可以使用Json Web Token或其他更好的方式替代。
-        if (!"dev".equals(env)) { //开发环境忽略签名认证
+        if ("dev".equals(env)) { //开发环境忽略签名认证
             registry.addInterceptor(new HandlerInterceptorAdapter() {
                 @Override
                 public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
                     //验证签名
-                    boolean pass = validateSign(request);
+                    boolean pass = validateSign1(request);
                     if (pass) {
                         return true;
                     } else {
@@ -160,6 +165,51 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
 
         String secret = "Potato";//密钥，自己修改
         String sign = DigestUtils.md5Hex(linkString + secret);//混合密钥md5
+
+        return StringUtils.equals(sign, requestSign);//比较
+    }
+
+    /**
+     *
+     */
+    private boolean validateSign1(HttpServletRequest request) {
+        String requestSign = request.getParameter("sign");//获得请求签名，如sign=19e907700db7ad91318424a97c54ed57
+        if (StringUtils.isEmpty(requestSign)) {
+            return false;
+        }
+
+        String requestAppId = request.getParameter("appid");
+        if(StringUtils.isEmpty(requestAppId)){
+            return false;
+        }
+        if(!requestAppId.equals(DUOMI_APPID)){
+            logger.info("appid: {} is not found", requestAppId);
+            return false;
+        }
+
+        String requestTimeStamp = request.getParameter("timestamp");
+        if(StringUtils.isEmpty(requestTimeStamp)){
+            return false;
+        }
+
+        String requestBody = "";
+        if("POSt".equalsIgnoreCase(request.getMethod())){
+            try {
+                requestBody = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+            }catch (IOException ex){
+                throw new Error("Failed to get data: " + ex.getMessage());
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(requestBody).append(requestAppId).append(requestTimeStamp);
+
+        String linkString = sb.toString();
+
+        String secret = DUOMI_APP_SECRET;//密钥，自己修改
+        String sign = AESDecode.HMACSha1(linkString, secret);//混合密钥md5
+        System.out.println("sign = " + sign);
+        System.out.println("requestSign = " + requestSign);
 
         return StringUtils.equals(sign, requestSign);//比较
     }
